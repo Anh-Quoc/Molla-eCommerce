@@ -1,0 +1,1464 @@
+openapi: 3.0.0
+info:
+  title: Pronia shop API - Customer
+  description: A sample API to demonstrate Swagger documentation with schema relationships.
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:3000/api
+    description: Local server 
+
+tags:
+  - name: Customer
+    description: API for customer use
+    # externalDocs:
+    #   description: Find out more
+    #   url: http://swagger.io
+  - name: Manager
+    description: API for manager use
+
+  - name: Admin
+    description: API for admin use
+    # externalDocs:
+    #   description: API for admin use
+    #   url: http://swagger.io
+
+
+paths:
+
+  # Customer endpoints
+
+  /products:
+    get:
+      tags: 
+        - Customer
+        - Admin
+      summary: Get all products
+      description: Retrieve a list of all products.
+      responses:
+        '200':
+          description: A JSON array of products
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_products'      
+        '404':
+          description: No products found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No products found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+  /products/{uniqueName}:
+    get:
+      tags: 
+        - Customer
+      summary: Get a product by unique name
+      description: Retrieve a product by its unique name.
+      parameters:
+        - in: path
+          name: uniqueName
+          required: true
+          description: The unique name of the product to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A JSON object of the product
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Product'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product not found"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid unique name format"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+  
+  /products/search/:
+    get:
+      tags: 
+        - Customer
+      summary: Search for products with filters
+      description: Retrieve a list of products based on various search criteria.
+      parameters:
+        - in: query
+          name: keyword
+          required: true
+          description: The name or part of the name of the product to search for.
+          schema:
+            type: string
+        - in: query
+          name: type
+          required: false
+          description: Filter by product type.
+          schema:
+            type: string
+        - in: query
+          name: minPrice
+          required: false
+          description: Minimum price of the product.
+          schema:
+            type: number
+            format: float
+        - in: query
+          name: maxPrice
+          required: false
+          description: Maximum price of the product.
+          schema:
+            type: number
+            format: float       
+        - in: query
+          name: tags
+          required: false
+          description: Comma-separated list of tags to filter by.
+          schema:
+            type: string
+        - in: query
+          name: categories
+          required: false
+          description: Comma-separated list of categories to filter by.
+          schema:
+            type: string
+        - in: query
+          name: minRating
+          required: false
+          description: Minimum rating to filter by.
+          schema:
+            type: number
+            format: float
+      responses:
+        '200':
+          description: A JSON array of products matching the search criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_products'
+        '404':
+          description: No products found matching the criteria
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No products found"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid search query or filters"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"                      
+
+  /rating:
+    post:
+      tags: 
+        - Customer
+      summary: Rate a product
+      description: Rate a product identified by its unique name.
+      parameters:
+        - in: path
+          name: uniqueName
+          required: true
+          description: The unique name of the product to rate.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                  format: int32
+                  example: 4
+                  description: The rating value for the product, typically on a scale from 1 to 5.
+      responses:
+        '200':
+          description: Product rated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product rated successfully"
+                  totalRating:
+                    type: integer
+                    example: 4
+                    description: The updated total rating for the product.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid rating value"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+
+  /comments:
+    get:
+      tags: 
+        - Customer    
+      summary: Get comments for a product
+      description: Retrieve a list of comments for a product identified by its unique name.
+      parameters:
+        - in: path
+          name: uniqueName
+          required: true
+          description: The unique name of the product for which comments are to be retrieved.
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          required: false
+          description: Sort comments by a specific field (e.g., date, rating).
+          schema:
+            type: string
+            enum:
+              - date
+              - rating
+        - in: query
+          name: order
+          required: false
+          description: Order of the sorted comments (ascending or descending).
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+        - in: query
+          name: limit
+          required: false
+          description: Number of comments per page (for pagination).
+          schema:
+            type: integer
+            format: int32
+        - in: query
+          name: page
+          required: false
+          description: Page number for pagination.
+          schema:
+            type: integer
+            format: int32      
+      responses:
+        '200':
+          description: A JSON array of comments for the product
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_product_comments'
+        '404':
+          description: Product not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Product not found"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid parameters"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+    post:
+      tags: 
+        - Customer    
+      summary: Add a comment to a product
+      description: Add a comment to a product identified by its unique name.
+      parameters:
+        - in: path
+          name: uniqueName
+          required: true
+          description: The unique name of the product to which the comment is to be added.
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  example: "This is a great product!"
+                parentComment:
+                  type: integer
+                  format: int32
+                  example: 0
+      responses:
+        '200':
+          description: Comment added successfully
+          content:
+            application/json:
+              schema:                
+                items:
+                $ref: '#/components/schemas/list_product_comments'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid comment content"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+  /like-comment:
+    post:
+      tags: 
+        - Customer    
+      summary: Like a comment
+      description: Like a comment identified by its unique identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                commentId:
+                  type: integer
+                  format: int32
+                  example: 1
+      responses:
+        '200':
+          description: Comment liked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Article liked successfully"
+                  likeCount:
+                    type: integer
+                    example: 123
+                    description: The updated number of likes for the article.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid comment identifier"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+  
+  /like-article:
+    post:
+      tags: 
+        - Customer    
+      summary: Like an article
+      description: Like an article identified by its unique identifier.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                articleId:
+                  type: integer
+                  format: int32
+                  example: 1
+                  description: The unique identifier of the article to like.
+              required:
+                - articleId
+      responses:
+        '200':
+          description: Article liked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Article liked successfully"
+                  likeCount:
+                    type: integer
+                    example: 123
+                    description: The updated number of likes for the article.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid article identifier"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+  /cart:
+    get: 
+      tags: 
+        - Customer    
+      summary: Get the user's cart
+      description: Retrieve the products in the user's cart.
+      responses:
+        '200':
+          description: A JSON array of products in the cart
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_product_cart'
+        '404':
+          description: Cart is empty
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Cart is empty"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+    post:
+      tags: 
+        - Customer    
+      summary: Add a product to the cart
+      description: Add a product to the user's cart.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productUniqueName:
+                  type: string
+                  format: string
+                  example: "t-shirt-1"
+                quantity:
+                  type: integer
+                  format: int32
+                  example: 1
+      responses:
+        '200':
+          description: Product added to cart
+          content:
+            # application/json:
+            #   schema:
+            #     type: object
+                
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_product_cart'     
+                properties:
+                  message:
+                    type: string
+                    example: "Product added to cart"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid product unique name or quantity"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+    put: 
+      tags: 
+        - Customer    
+      summary: Update the quantity of a product in the cart
+      description: Update the quantity of a product in the user's cart.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productUniqueName:
+                  type: string
+                  format: string
+                  example: "t-shirt-1"
+                quantity:
+                  type: integer
+                  format: int32
+                  example: 2
+      responses:
+        '200':
+          description: Product quantity updated
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_product_cart'     
+                properties:
+                  message:
+                    type: string
+                    example: "Product quantity updated"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid product unique name or quantity"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+    delete:
+      tags: 
+        - Customer    
+      summary: Remove a product from the cart
+      description: Remove a product from the user's cart.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                productUniqueName:
+                  type: string
+                  format: string
+                  example: "t-shirt-1"
+      responses:
+        '200':
+          description: Product removed from cart
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/list_product_cart'     
+                properties:
+                  message:
+                    type: string
+                    example: "Product removed from cart"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid product unique name"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+  /cart/checkout:
+    post:
+      tags: 
+        - Customer    
+      summary: Checkout the cart
+      description: Checkout the products in the user's cart.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                paymentMethod:
+                  type: string
+                  example: "Credit Card"
+                shippingAddress:
+                  type: string
+                  example: "789 Oak St"
+                shippingMethod:
+                  type: string
+                  example: "Standard"
+      responses:
+        '200':
+          description: Cart checked out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Cart checked out successfully"
+                  orderNumber:
+                    type: string
+                    example: "ORD123456"
+                  totalAmount:
+                    type: number
+                    format: float
+                    example: 19.99
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid order details"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+  /orders:
+    get: 
+      tags: 
+        - Customer    
+      summary: Get the user's orders
+      description: Retrieve the orders placed by the user.
+      responses:
+        '200':
+          description: A JSON array of orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/orders'
+        '404':
+          description: No orders found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "No orders found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+    
+  /orders/{orderNumber}:
+    get:
+      tags: 
+        - Customer    
+      summary: Get an order by order number
+      description: Retrieve an order by its order number.
+      parameters:
+        - in: path
+          name: orderNumber
+          required: true
+          description: The order number of the order to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A JSON object of the order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/orders'
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Order not found"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid order number format"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+    put:
+      tags: 
+        - Customer    
+      summary: Update an order
+      description: Update the details of an existing order identified by its unique identifier.
+      parameters:
+        - in: path
+          name: orderNumber
+          required: true
+          description: The order number of the order to retrieve
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "shipped"
+                  description: The updated status of the order (e.g., "pending", "shipped", "delivered").
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      productId:
+                        type: integer
+                        format: int32
+                        example: 101
+                      quantity:
+                        type: integer
+                        example: 2
+                  description: The updated list of items in the order.
+      responses:
+        '200':
+          description: Order updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Order updated successfully"
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid order details"
+        '404':
+          description: Order not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Order not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+  
+  /users:
+    get:
+      tags: 
+        - Customer    
+      summary: Get the current user's profile
+      description: Retrieve the profile of the currently logged in user.
+      responses:
+        '200':
+          description: A JSON object of the user's profile
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Profile not found"
+    
+    post:
+      tags: 
+        - Customer    
+      summary: Register a new user
+      description: Register a new user with the provided details.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - fullName
+                - email
+                - password
+              properties:
+                fullName:
+                  type: string
+                  example: "Alice Jones"
+                  description: The full name of the user.
+                email:
+                  type: string
+                  format: email
+                  example: "alice.jones@example.com"
+                  description: The email address of the user.
+                password:
+                  type: string
+                  minLength: 6
+                  example: "password123"
+                  description: The password for the user account. Must be at least 6 characters long.
+      responses:
+        '200':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "User registered successfully"
+                  userId:
+                    type: string
+                    example: "1234567890"
+                    description: The unique identifier for the newly registered user.
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid user details"
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    description: Details about validation errors.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"        
+
+    put:
+      tags: 
+        - Customer    
+      summary: Update the user's profile
+      description: Update the profile of the currently logged-in user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                fullName:
+                  type: string
+                  example: "Alice Jones"     
+                address:
+                  type: string
+                  example: "789 Oak St"
+                phone:
+                  type: string
+                  example: "555-7890"
+                dob: 
+                  type: string
+                  example: "1992-03-10"              
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/users'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Invalid profile details"
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: string
+                    description: Details about validation errors.
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Unauthorized access"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "An unexpected error occurred"
+
+components:
+  schemas:
+    Product: 
+      type: object
+      properties:
+        id: 
+          type: integer
+          format: int32
+          example: 1
+        name:
+          type: string
+          example: "T-shirt"    
+        uniqueName:
+          type: string
+          example: "t-shirt-1"
+
+        description:
+          type: string
+          example: "A comfortable t-shirt"
+        images:
+          type: array
+          items:
+            $ref: '#/components/schemas/product_images'  
+        type:
+          type: array
+          example: [Clothing]
+        price:
+          type: number
+          format: float
+          example: 19.99
+        stock: 
+          type: integer
+          format: int32
+          example: 100
+        tags: 
+          type: array
+          example: ["t-shirt", "clothing"]
+        categories:
+          type: array
+          example: ["clothing"]
+        total_comment:  
+          type: integer
+          format: int32
+          example: 10
+        total_rating:
+          type: integer
+          format: int32
+          example: 4
+        createdAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        # updatedAt:
+        #   type: string
+        #   example: "2021-01-01 12:00:00"
+        # createdBy:
+        #   type: integer
+        #   format: int32
+        #   example: 1
+        # updatedBy:
+        #   type: integer
+        #   format: int32
+        #   example: 1
+        active:
+          type: boolean
+          example: true
+    
+    product_images:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        url:
+          type: string
+          example: "https://example.com/image.jpg"
+        type:
+          type: string
+          example: "thumbnail"
+        active:
+          type: boolean
+          example: true  
+
+    list_products:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+        total:
+          type: integer
+          format: int32
+          example: 10
+        page:
+          type: integer
+          format: int32
+          example: 1
+        limit:
+          type: integer
+          format: int32
+          example: 10
+        totalPages:
+          type: integer
+          format: int32
+          example: 1
+        hasNextPage:
+          type: boolean
+          example: false
+        hasPrevPage:
+          type: boolean
+          example: false
+        nextPage:
+          type: integer
+          format: int32
+          example: 2
+        prevPage:
+          type: integer
+          format: int32
+          example: 1
+
+    ProductComment:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        productId:
+          type: integer
+          format: int32
+          example: 1
+        createdBy:
+          type: integer
+          format: int32
+          example: 1  
+        fullName:
+          type: string
+          example: "Alice Jones"
+        content:
+          type: string
+          example: "This is a great product!"
+        createdAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        updatedAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        parentComment:
+          type: integer
+          format: int32
+          example: 0
+        totalLikes:
+          type: integer
+          format: int32
+          example: 10    
+
+    list_product_comments: 
+      type: object
+      properties:
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ProductComment'
+        total:
+          type: integer
+          format: int32
+          example: 10
+        page:
+          type: integer
+          format: int32
+          example: 1
+        limit:
+          type: integer
+          format: int32
+          example: 10
+        totalPages:
+          type: integer
+          format: int32
+          example: 1
+        hasNextPage:
+          type: boolean
+          example: false
+        hasPrevPage:
+          type: boolean
+          example: false
+        nextPage:
+          type: integer
+          format: int32
+          example: 2
+        prevPage:
+          type: integer
+          format: int32
+          example: 1
+
+    cart_item:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        product: 
+          type: object
+          $ref: '#/components/schemas/Product'  
+        quantity:
+          type: integer
+          format: int32
+          example: 1
+        subTotal:
+          type: number
+          format: float
+          example: 19.99
+
+    list_product_cart: 
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/cart_item'
+        totalPrice:
+          type: number
+          format: float
+          example: 19.99
+
+    order_item: 
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1  
+        product:
+          type: object
+          $ref: '#/components/schemas/Product'
+        price: 
+          type: number
+          format: float
+          example: 19.99
+        discount:
+          type: number
+          format: float
+          example: 0
+        quantity:
+          type: integer
+          format: int32
+          example: 1
+        amount:
+          type: number
+          format: float
+          example: 19.99
+
+    orders:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        orderNumber:
+          type: string
+          example: "ORD123456"
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/order_item'
+        totalAmount:
+          type: number
+          format: float
+          example: 19.99
+        status:
+          type: string
+          example: "Pending"
+        createdAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        updatedAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        createdBy:
+          type: integer
+          format: int32
+          example: 1
+        updatedBy:
+          type: integer
+          format: int32
+          example: 1
+        active:
+          type: boolean
+          example: true 
+
+    permission_group:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        name:
+          type: string
+          example: "Customer"
+        permissions:
+          type: array
+          # items:
+          #   $ref: '#/components/schemas/Permission'
+          example: [ 
+                {"resource": "post", "action": { "create": false, "read": true, "update": false, "delete": false } }, 
+                { "resource": "comment", "action": { "create": true, "read": true, "update": true, "delete": true }}]
+        active:
+          type: boolean
+          example: true
+
+    users:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 3
+        fullName:
+          type: string
+          example: "Alice Jones"
+        email: 
+          type: string
+          example: "alice.jones@example.com"
+        # password:
+        #   type: string
+        #   example: "$2b$10$zVQ.FB77IECAfCt7uENASO4bAV8IKIhGQJJGMbIuNmYP70LzBkbCC"
+        permission_group:
+          $ref: '#/components/schemas/permission_group'
+          # type: integer
+          # format: int32
+          # example: 1
+        address:
+          type: string
+          example: "789 Oak St"
+        phone:
+          type: string
+          example: "555-7890"
+        dob: 
+          type: string
+          example: "1992-03-10"
+        lastLogin:
+          type: string
+          example: "2021-01-01 12:00:00"
+        createdAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        updatedAt:
+          type: string
+          example: "2021-01-01 12:00:00"
+        active:
+          type: boolean
+          example: true
+
+
+
