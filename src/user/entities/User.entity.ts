@@ -14,8 +14,8 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: false })
-  fullname: string;
+  @Column({ name: 'full_name', nullable: false })
+  fullName: string;
 
   @Column({ unique: true, nullable: false })
   email: string;
@@ -23,31 +23,31 @@ export class User {
   @Column({ nullable: false })
   password: string;
   
-  @Column()
+  @Column({name: 'permission_group_id', nullable: false})
   permissionGroupId: number;
 
   @ManyToOne(() => PermissionGroup, (permissionGroup) => permissionGroup.users)
-  @JoinColumn({name: 'permissionGroupId'})
+  @JoinColumn({name: 'permission_group_id'})
   permissionGroup: PermissionGroup;
 
   @Column({ nullable: true })
   address: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'phone', nullable: true })
   phoneNumber: string;
 
-  @Column({ nullable: true })
+  @Column({ name: 'dob', nullable: true })
   dateOfBirth: Date;
 
-  @Column({ nullable: true })
+  @Column({ name: 'last_login',  nullable: true })
   lastLogin: Date;
 
-  @CreateDateColumn()
-  created_at: Date;
+  @CreateDateColumn({name: 'created_at'})
+  createdAt: Date;
 
-  @UpdateDateColumn()
-  updated_at: Date;
+  @UpdateDateColumn({name: 'updated_at'})
+  updatedAt: Date;
 
-  @Column({ nullable: false, default: true })
+  @Column({ name: 'active', nullable: false, default: true })
   isActive: boolean;
 }

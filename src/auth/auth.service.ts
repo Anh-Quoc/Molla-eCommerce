@@ -7,6 +7,7 @@ import {
   } from 'node_modules/@nestjs/common';
   import { JwtService } from 'node_modules/@nestjs/jwt';
   import { UsersService } from 'src/user/services/users.service';
+import * as bcrypt from "bcrypt";
   
   @Injectable()
   export class AuthService {
@@ -15,34 +16,30 @@ import {
     constructor(
       private jwtService: JwtService,
       private usersService: UsersService,
-    ) {}
-  
-    // async findAllPermissionsOfUser(user: User): Promise<Permission[]> {
-    //   return await this.userRepository.findAllPermissions(user);
-    // }
 
-    async signIn(email: string, password: string): Promise<any> {
+    ) {}
+
+    async login(email: string, password: string): Promise<string> {
       const user = await this.usersService.findByEmail(email);
-      this.logger.log(`user: ${JSON.stringify(user)}`);
+      // this.logger.log(`user: ${JSON.stringify(user)}`);
       if (!user) {
         throw new NotFoundException();
       }
-  
-      let md5 = require('md5');
-  
-      if (user.password !== md5(password)) {
-        throw new BadRequestException('user or password incorrect');
+      // this.logger.log(`user: ${JSON.stringify(user)}`);
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        // this.logger.error('Password does not match');
+        throw new UnauthorizedException();
       }
-  
+
+      await this.usersService.updateLoginDate(user.id);
+
       // Generate a JWT and return
       const payload = {
         sub: user.id,
-        
-      }; // Adjust as needed to get role names or IDs
-      return {
-        access_token: await this.jwtService.signAsync(payload),
+        role: user.permissionGroupId,
       };
-      // role: user.role,
+      return await this.jwtService.signAsync(payload);
     }
   }
   

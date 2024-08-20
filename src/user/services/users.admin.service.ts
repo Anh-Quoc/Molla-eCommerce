@@ -1,10 +1,10 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "../entities/user.entity";
-import { UserResponseDto } from "../dtos/user.response.dto";
-import { plainToClass } from "class-transformer";
-import { CreateUserInputDto } from "../dtos/create-user.dto";
+import {Injectable, NotFoundException} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Repository} from "typeorm";
+import {User} from "../entities/User.entity";
+import {UserResponseDto} from "../dtos/user.response.dto";
+import {plainToClass} from "class-transformer";
+import {CreateUserInputDto} from "../dtos/create-user.dto";
 import * as bcrypt from "bcrypt";
 
 @Injectable()
@@ -12,8 +12,7 @@ export class UsersAdminService {
   async createNewUser(createUserInputDto: CreateUserInputDto) {
     
     const salt = await bcrypt.genSalt();
-    let hashPassword = await bcrypt.hash(createUserInputDto.password, salt);
-    createUserInputDto.password = hashPassword;
+    createUserInputDto.password = await bcrypt.hash(createUserInputDto.password, salt);
 
     return this.userRepository.save(createUserInputDto);
   }

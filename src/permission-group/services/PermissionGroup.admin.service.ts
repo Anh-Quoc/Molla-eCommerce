@@ -48,7 +48,7 @@ export class PermissionGroupService {
 
 
   async updateForRole(crGroupPermissionDto: PermissionGroupInputDto): Promise<PermissionGroup> {
-    let role = crGroupPermissionDto.role;
+    let role = crGroupPermissionDto.name;
     let groupPermission: PermissionGroup = await this.pgRepository
       .createQueryBuilder('group_permissions')
       .where('group_permissions.role = :role', { role })
@@ -58,7 +58,7 @@ export class PermissionGroupService {
       throw new BadRequestException('Role not found')
     }
 
-    groupPermission.AccessControlSet = crGroupPermissionDto.AccessControlSet;
+    groupPermission.permissions = crGroupPermissionDto.permissions;
     return this.pgRepository.save(groupPermission);
   }
 

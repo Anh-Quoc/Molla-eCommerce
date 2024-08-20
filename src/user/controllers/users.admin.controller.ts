@@ -2,16 +2,11 @@ import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nest
 import { UsersService } from "../services/users.service";
 import { ApiBody, ApiOperation, ApiParam, ApiProperty, ApiResponse } from "@nestjs/swagger";
 import { UsersAdminService } from "../services/users.admin.service";
-import { UserResponseDto } from "../dtos/user.response.dto";
 import { plainToClass } from "class-transformer";
-import { User } from "../entities/user.entity";
+import { User } from "../entities/User.entity";
 import { CreateUserInputDto } from "../dtos/create-user.dto";
 import { UserAdminResponseDto } from "../dtos/user.admin.response";
-import { Roles } from "src/common/decorators/roles.decorator";
-import { RoleEnum } from "src/common/enums/role.enum";
-// import { CheckPermissions } from "src/authz/permissions.decorator";
-// import { PermissionAction } from "src/authz/casl-ability.factory";
-// import { PermissionsGuard } from "src/authz/permissions.guard";
+import {AuthGuard} from "../../auth/auth.guard";
 
 @Controller('admin')
 export class UsersAdminController {

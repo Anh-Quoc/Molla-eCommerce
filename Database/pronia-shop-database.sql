@@ -1,4 +1,4 @@
--- CREATE DATABASE pronia_shop;
+-- CREATE DATABASE molla_ecommerce;
 
 
 -- SQLINES FOR EVALUATION USE ONLY (14 DAYS)

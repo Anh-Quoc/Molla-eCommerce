@@ -1,21 +1,41 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from 'node_modules/@nestjs/common';
-import { AuthService } from './auth.service';
-import { AuthAccountInputDto } from './dtos/auth-account.input';
-import { ApiOperation, ApiResponse } from 'node_modules/@nestjs/swagger';
+import {Body, Controller, HttpCode, HttpStatus, Post} from 'node_modules/@nestjs/common';
+import {AuthService} from './auth.service';
+import {AuthAccountInputDto} from './dtos/auth-account.input';
+import {ApiOperation, ApiResponse} from 'node_modules/@nestjs/swagger';
+import {Logger} from "@nestjs/common";
+import {Public} from "./decorator/public.decorator";
 
-@Controller('auth')
+@Controller('/auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  private readonly logger = new Logger(AuthController.name);
+  constructor(
+      private authService: AuthService,) {}
 
   @ApiOperation({
-    summary: 'Sign in an existing user',
-    description:
-      'This endpoint allows an existing user to sign in with their email and password. Upon successful authentication, a token or session information is returned.',
+    summary: 'Authenticate a user',
+    description: 'Authenticate a user and issue a token for subsequent requests.'
   })
   @ApiResponse({
     status: 200,
-    description:
-      'Successfully signed in. Returns authentication token or session information.',
+    description: 'Authentication successful',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            token: {
+              type: 'string',
+              example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c",
+              description: 'The JWT token issued for authenticated requests.'
+            },
+            message: {
+              type: 'string',
+              example: "Authentication successful"
+            }
+          }
+        }
+      }
+    }
   })
   @ApiResponse({
     status: 400,
@@ -32,9 +52,15 @@ export class AuthController {
       'Internal server error. The sign-in process could not be completed due to a server issue.',
   })
   @HttpCode(HttpStatus.OK)
-  @Post('login')
-  // Sign in API
-  signIn(@Body() signInDto: AuthAccountInputDto) {
-    return this.authService.signIn(signInDto.email, signInDto.password);
+  @Public()
+  @Post('/login')
+  async login(@Body() signInDto: AuthAccountInputDto) {
+    let tokenString: string = await this.authService.login(signInDto.email, signInDto.password);
+    return {
+      token: tokenString,
+      message: 'Authentication successful',
+    };
   }
+
+
 }

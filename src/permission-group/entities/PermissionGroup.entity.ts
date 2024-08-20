@@ -4,7 +4,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'node_modules/typeorm';
-import { User } from 'src/user/entities/user.entity';
+import { User } from 'src/user/entities/User.entity';
 import { IsBoolean, IsString, ValidateNested } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
@@ -51,7 +51,7 @@ export class PermissionGroup {
   id: number;
 
   @Column({unique: true})
-  role: string;
+  name: string;
 
   @OneToMany(() => User, (user) => user.permissionGroup, {
     cascade: true,
@@ -59,6 +59,9 @@ export class PermissionGroup {
   })
   users: User[];
 
-  @Column('jsonb')
-  AccessControlSet: ResourceAccessControl[];
+  @Column({name: 'permissions', type: "jsonb"})
+  permissions : ResourceAccessControl[];
+
+  @Column({name: 'active'})
+  active: boolean;
 }

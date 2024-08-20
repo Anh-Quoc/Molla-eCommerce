@@ -1,17 +1,10 @@
 import { IsEmail, IsNotEmpty, IsString, Length, Matches } from 'class-validator';
 import { ApiProperty } from 'node_modules/@nestjs/swagger';
-// import {
-//   IsEmail,
-//   IsNotEmpty,
-//   IsString,
-//   Length,
-//   Matches,
-// } from 'node_modules/class-validator/types';
 
 export class AuthAccountInputDto {
   @ApiProperty({
     description: 'Email of the user',
-    example: 'john.doe@example.com',
+    example: 'alice.jones@example.com',
   })
   @IsNotEmpty()
   @IsEmail()

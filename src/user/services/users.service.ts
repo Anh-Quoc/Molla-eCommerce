@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from 'node_modules/@nestjs/common';
 import { InjectRepository } from 'node_modules/@nestjs/typeorm';
 import { Repository } from 'node_modules/typeorm';
-import { User } from '../entities/user.entity';
+import { User } from '../entities/User.entity';
 import { UpdateUserInputDto } from '../dtos/update-user.input.dto';
 import * as bcrypt from "bcrypt";
 import { CustomerRegisterDto } from '../dtos/customer-register.dto';
@@ -65,6 +65,22 @@ export class UsersService {
     );
 
     return this.userRepository.save(updatedProfile);
+  }
+
+  async updateLoginDate(
+      userId: number
+  ): Promise<User> {
+    const existingProfile = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!existingProfile) {
+      throw new NotFoundException(`User profile with ID ${userId} not found`);
+    }
+
+    existingProfile.lastLogin = new Date();
+
+    return this.userRepository.save(existingProfile);
   }
 
   async remove(id: number): Promise<void> {
