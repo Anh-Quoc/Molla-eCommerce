@@ -15,7 +15,7 @@ import {plainToClass} from 'class-transformer';
 import {UsersService} from '../services/users.service';
 import {CustomerRegisterDto} from '../dtos/customer-register.dto';
 import {Logger, UseGuards} from "@nestjs/common";
-import {AuthGuard} from "../../auth/auth.guard";
+import {AuthGuard} from "../../auth/guards/auth.guard";
 import {ApiBearerAuth, ApiHeader, ApiHeaders, ApiTags} from "@nestjs/swagger";
 import {Public} from "../../auth/decorator/public.decorator";
 

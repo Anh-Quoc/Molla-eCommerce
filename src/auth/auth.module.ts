@@ -5,11 +5,13 @@ import { JwtModule } from 'node_modules/@nestjs/jwt';
 import { jwtConstants } from './constants';
 import { UsersModule } from 'src/user/users.module';
 import {APP_GUARD} from "@nestjs/core";
-import {AuthGuard} from "./auth.guard";
+import {AuthGuard} from "./guards/auth.guard";
+import {PermissionGroupModule} from "../permission-group/PermissionGroup.module";
 
 @Module({
   imports: [
     UsersModule,
+    PermissionGroupModule,
     JwtModule.register({
       global: true,
       secret: jwtConstants.secret,

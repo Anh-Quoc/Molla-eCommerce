@@ -6,6 +6,7 @@ import {UserResponseDto} from "../dtos/user.response.dto";
 import {plainToClass} from "class-transformer";
 import {CreateUserInputDto} from "../dtos/create-user.dto";
 import * as bcrypt from "bcrypt";
+import {PermissionGroup} from "../../permission-group/entities/PermissionGroup.entity";
 
 @Injectable()
 export class UsersAdminService {
@@ -21,6 +22,11 @@ export class UsersAdminService {
     createUserInputDto.password = await bcrypt.hash(createUserInputDto.password, salt);
 
     return this.userRepository.save(createUserInputDto);
+  }
+
+  async findPermissionGroup(userId: number): Promise<PermissionGroup>{
+
+    return null;
   }
 
   // async findByPermissionGroupId(id: number): Promise<UserResponseDto[]> {

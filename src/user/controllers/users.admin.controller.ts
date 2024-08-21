@@ -15,7 +15,7 @@ import {plainToClass} from "class-transformer";
 import {User} from "../entities/User.entity";
 import {CreateUserInputDto} from "../dtos/create-user.dto";
 import {UserAdminResponseDto} from "../dtos/user.admin.response";
-import {AuthGuard} from "../../auth/auth.guard";
+import {AuthGuard} from "../../auth/guards/auth.guard";
 
 @Controller('admin')
 export class UsersAdminController {

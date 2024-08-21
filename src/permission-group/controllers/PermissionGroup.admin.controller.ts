@@ -3,7 +3,7 @@ import { PermissionGroupAdminService } from 'src/permission-group/services/Permi
 import { PermissionGroup } from '../entities/PermissionGroup.entity';
 import { PermissionGroupInputDto } from '../dtos/PermissionGroup.input.dto';
 import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags} from '@nestjs/swagger';
-import {AuthGuard} from "../../auth/auth.guard";
+import {AuthGuard} from "../../auth/guards/auth.guard";
 
 @Controller('admin')
 export class PermissionGroupAdminController {

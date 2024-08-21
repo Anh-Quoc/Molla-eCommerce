@@ -11,4 +11,4 @@ import {PermissionGroupService} from "./services/PermissionGroup.service";
   providers: [PermissionGroupAdminService, PermissionGroupService],
   exports: [PermissionGroupService]
 })
-export class GroupPermissionsModule {}
+export class PermissionGroupModule {}

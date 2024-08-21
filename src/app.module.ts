@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from 'node_modules/@nestjs/config';
 
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './user/users.module';
-import { GroupPermissionsModule } from './permission-group/PermissionGroup.module';
+import { PermissionGroupModule } from './permission-group/PermissionGroup.module';
 import { PermissionGroup } from './permission-group/entities/PermissionGroup.entity';
 import { User } from './user/entities/User.entity';
 import { AppController } from './app.controller';
@@ -32,7 +32,7 @@ import { ProductsModule } from './products/products.module';
 
     AuthModule,
     UsersModule,
-    GroupPermissionsModule,
+    PermissionGroupModule,
     ProductsModule,
   ],
   controllers: [AppController],

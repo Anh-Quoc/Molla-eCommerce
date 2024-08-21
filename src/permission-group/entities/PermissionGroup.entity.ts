@@ -5,10 +5,8 @@ import {
   PrimaryGeneratedColumn,
 } from 'node_modules/typeorm';
 import { User } from 'src/user/entities/User.entity';
-import { IsBoolean, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-// import { PermissionAction } from 'src/authz/casl-ability.factory';
 
 export class PermissionAction{
   @ApiProperty({

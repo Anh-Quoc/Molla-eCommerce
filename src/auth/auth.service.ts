@@ -37,7 +37,7 @@ import * as bcrypt from "bcrypt";
       // Generate a JWT and return
       const payload = {
         sub: user.id,
-        role: user.permissionGroupId,
+        permission: user.permissionGroupId,
       };
       return await this.jwtService.signAsync(payload);
     }

@@ -12,6 +12,6 @@ import {PermissionGroup} from "../permission-group/entities/PermissionGroup.enti
   imports: [TypeOrmModule.forFeature([User]), TypeOrmModule.forFeature([PermissionGroup])],
   providers: [UsersService, UsersAdminService],
   controllers: [UsersController, UsersAdminController],
-  exports: [UsersService],
+  exports: [UsersService, UsersAdminService],
 })
 export class UsersModule {}
