@@ -54,7 +54,7 @@ export class CreateUserInputDto {
     message:
       'Full name can only contain letters, spaces, hyphens, and apostrophes',
   })
-  fullname: string;
+  fullName: string;
 
   @ApiPropertyOptional({
     description: 'Address of the user',

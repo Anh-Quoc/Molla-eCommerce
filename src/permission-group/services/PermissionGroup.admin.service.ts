@@ -18,8 +18,6 @@ export class PermissionGroupAdminService {
       .where('permission_group.id = :id', { id: idGroup })
       .getOne();
 
-    // .where('profile.roleId = 3', { roleId: 3 })
-    // .andWhere('profile.id = :id', { id: userId })
     if (!profile) {
       throw new NotFoundException(
         `Permission with ID ${idGroup} not found`,
@@ -29,16 +27,16 @@ export class PermissionGroupAdminService {
     return profile;
   }
 
-  async findByRole(role: string): Promise<PermissionGroup> {
-    const permissions = await this.pgRepository
-      .createQueryBuilder('permission_group')
-      .where('permission_group.name = :name', { name: role })
-      .getOne(); // Use getMany() to retrieve multiple permissions
+  // async findById(id: number): Promise<PermissionGroup> {
+  //   const permissions = await this.pgRepository
+  //     .createQueryBuilder('permission_group')
+  //     .where('permission_group.id = :id', { id: id })
+  //     .getOne(); // Use getMany() to retrieve multiple permissions
+  //
+  //   return permissions;
+  // }
 
-    return permissions;
-  }
-
-  async createWithNewRole(crGroupPermissionDto: PermissionGroupInputDto) {
+  async createPermissionGroup(crGroupPermissionDto: PermissionGroupInputDto) {
     // try {
     return this.pgRepository.save(crGroupPermissionDto);
     // } catch(QueryFailedError){
@@ -47,7 +45,7 @@ export class PermissionGroupAdminService {
   }
 
 
-  async updateForRole(crGroupPermissionDto: PermissionGroupInputDto): Promise<PermissionGroup> {
+  async updateById(id: number, crGroupPermissionDto: PermissionGroupInputDto): Promise<PermissionGroup> {
     let role = crGroupPermissionDto.name;
     let groupPermission: PermissionGroup = await this.pgRepository
       .createQueryBuilder('group_permissions')
@@ -62,16 +60,17 @@ export class PermissionGroupAdminService {
     return this.pgRepository.save(groupPermission);
   }
 
-  async deleteGroup(role: string): Promise<void> {
+  async deleteGroup(id: number): Promise<string>{
     const result = await this.pgRepository
       .createQueryBuilder('permission_group')
       .delete()
-      .where('permission_group.name = :name', { role })
+      .where('permission_group.id = :id', { id })
       .execute();
 
     if (result.affected === 0) {
-      throw new Error(`Permission group with role '${role}' not found.`);
+      return `Permission group with id '${id}' not found.`;
     }
+    return `Permission group with id '${id}' successfully deleted.`;
   }
 
 

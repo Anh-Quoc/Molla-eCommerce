@@ -12,17 +12,17 @@ import { ResourceAccessControl } from '../entities/PermissionGroup.entity';
 
 export class PermissionGroupInputDto {
   @ApiProperty({
-    description: 'The name of the role. It must be unique and descriptive.',
+    description: 'The name of the group. It must be unique and descriptive.',
     example: 'Customer',
     maxLength: 50,
   })
-  @IsNotEmpty({ message: 'Role name is required' })
-  @IsString({ message: 'Role name must be a string' })
-  @Length(1, 50, { message: 'Role name must be between 1 and 50 characters' })
+  @IsNotEmpty({ message: 'Name is required' })
+  @IsString({ message: 'Name must be a string' })
+  @Length(1, 50, { message: 'Name must be between 1 and 50 characters' })
   name: string;
 
   @ApiProperty({
-    description: 'List of permissions associated with the role',
+    description: 'List of permissions associated with',
     example: [
       {
         "resource": "post",

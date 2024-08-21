@@ -1213,7 +1213,3 @@ INSERT INTO likes (comment_id, article_id, user_id) VALUES
 (19, NULL, 3),
 (19, NULL, 3),
 (20, NULL, 3);
-
-
-
-SELECT "PermissionGroup"."id" AS "PermissionGroup_id", "PermissionGroup"."name" AS "PermissionGroup_name", "PermissionGroup"."permissions" AS "PermissionGroup_permissions", "PermissionGroup"."active" AS "PermissionGroup_active", User FROM "users" "User", "users" "users" LEFT JOIN "permission_group" "PermissionGroup" ON "PermissionGroup"."id" = "users"."permission_group_id" WHERE "PermissionGroup"."name" = 'Customer'

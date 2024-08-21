@@ -23,27 +23,45 @@ export class UsersAdminService {
     return this.userRepository.save(createUserInputDto);
   }
 
-  async findByPermissionGroupId(id: number): Promise<UserResponseDto[]> {
-    let listProfile = await this.userRepository
-      .createQueryBuilder('users')
-        // .from(User, 'users')
-      // .innerJoinAndSelect(PermissionGroup, 'PermissionGroup', 'PermissionGroup.id = users.permission_group_id')
-      .where('users.permissionGroupId = :id', { id: id })
-      .getMany();
+  // async findByPermissionGroupId(id: number): Promise<UserResponseDto[]> {
+  //   let listProfile = await this.userRepository
+  //     .createQueryBuilder('users')
+  //       // .from(User, 'users')
+  //     // .innerJoinAndSelect(PermissionGroup, 'PermissionGroup', 'PermissionGroup.id = users.permission_group_id')
+  //     .where('users.permissionGroupId = :id', { id: id })
+  //     .getMany();
+  //
+  //   if (!listProfile) {
+  //     throw new NotFoundException(`User profile with ${id} role not found`);
+  //   }
+  //
+  //   let response: UserResponseDto[] = [];
+  //
+  //   listProfile.forEach(p => {
+  //     response.push(plainToClass(UserResponseDto, p, {
+  //       excludeExtraneousValues: true,
+  //       exposeUnsetFields: false,
+  //     }))
+  //   })
+  //   return response;
+  // }
 
-    if (!listProfile) {
-      throw new NotFoundException(`User profile with ${id} role not found`);
+  async findByPermissionGroupId(id: number): Promise<UserResponseDto[]> {
+    const listProfile = await this.userRepository
+        .createQueryBuilder('users')
+        .where('users.permissionGroupId = :id', { id })
+        .getMany();
+
+    if (listProfile.length === 0) { // Updated to check for empty array
+      throw new NotFoundException(`No users found for permission group id ${id}`);
     }
 
-    let response: UserResponseDto[] = [];
-
-    listProfile.forEach(p => {
-      response.push(plainToClass(UserResponseDto, p, {
-        excludeExtraneousValues: true,
-        exposeUnsetFields: false,
-      }))
-    })
-    return response;
+    return listProfile.map(p =>
+        plainToClass(UserResponseDto, p, {
+          excludeExtraneousValues: true,
+          exposeUnsetFields: false,
+        })
+    );
   }
 
   async findById(userId: number): Promise<User> {

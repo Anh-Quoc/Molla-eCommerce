@@ -84,7 +84,6 @@ export class UsersController {
     })
     @Get('profile')
     @ApiBearerAuth()
-    @ApiBearerAuth('Authorization')
     @UseGuards(AuthGuard)
     async getCurrentUserProfile(@Request() req): Promise<UserResponseDto> {
         const profile = await this.usersService.findById(req.user_id);
@@ -122,7 +121,7 @@ export class UsersController {
     })
     @Public()
     @Post()
-    async register(@Body() userRegisterDto: CustomerRegisterDto): Promise<UserResponseDto> {
+    async customerRegister(@Body() userRegisterDto: CustomerRegisterDto): Promise<UserResponseDto> {
         const profile = await this.usersService.create(userRegisterDto);
         return plainToClass(UserResponseDto, profile, {
             excludeExtraneousValues: true,
@@ -160,12 +159,11 @@ export class UsersController {
         description:
             'Internal server error. The user profile could not be updated due to a server issue.',
     })
-    @ApiBearerAuth() // Adds Bearer Auth for this endpoint
-    @ApiBearerAuth('Authorization')
+    @ApiBearerAuth()
     @UseGuards(AuthGuard)
-    @Put()
+    @Put('profile')
     // Update user API
-    async update(
+    async updateCustomerProfile(
         @Request() req,
         @Body() updateUserInputDto: UpdateUserInputDto,
     ): Promise<UserResponseDto> {
