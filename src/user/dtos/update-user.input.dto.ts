@@ -21,7 +21,7 @@ export class UpdateUserInputDto {
     message:
       'Password must be at least 8 characters long and contain both letters and numbers',
   })
-  password: string;
+  password?: string;
 
   @ApiProperty({
     description: 'Full name of the user',
@@ -29,7 +29,7 @@ export class UpdateUserInputDto {
   })
   @IsOptional()
   @IsString()
-  fullname?: string;
+  fullName?: string;
 
   @ApiPropertyOptional({
     description: 'Address of the user',

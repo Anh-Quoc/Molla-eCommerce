@@ -4,6 +4,7 @@ import {AuthAccountInputDto} from './dtos/auth-account.input';
 import {ApiOperation, ApiResponse} from 'node_modules/@nestjs/swagger';
 import {Logger} from "@nestjs/common";
 import {Public} from "./decorator/public.decorator";
+import {ApiTags} from "@nestjs/swagger";
 
 @Controller('/auth')
 export class AuthController {
@@ -15,6 +16,7 @@ export class AuthController {
     summary: 'Authenticate a user',
     description: 'Authenticate a user and issue a token for subsequent requests.'
   })
+  @ApiTags('Common', 'Customer', 'Admin')
   @ApiResponse({
     status: 200,
     description: 'Authentication successful',

@@ -9,6 +9,7 @@ import { PermissionGroup } from './permission-group/entities/PermissionGroup.ent
 import { User } from './user/entities/User.entity';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { ProductsModule } from './products/products.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AppService } from './app.service';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         entities: [User, PermissionGroup],
+        logging: true,
         synchronize: false,
       }),
     }),
@@ -31,6 +33,7 @@ import { AppService } from './app.service';
     AuthModule,
     UsersModule,
     GroupPermissionsModule,
+    ProductsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

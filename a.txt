@@ -37,15 +37,19 @@
                     example: "Product removed from cart"
 
 
+
+Alice Johns - Customer
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjMsInJvbGUiOjQsImlhdCI6MTcyNDIwNDkzNiwiZXhwIjoxNzI0MjkxMzM2fQ.gKSZuF9HKLNE19M2hcrjMPX5KBAKHVhyZkONSnIHIPQ
+
+John Doe - Customer
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjQsInJvbGUiOjMsImlhdCI6MTcyNDIwNTI4NiwiZXhwIjoxNzI0MjkxNjg2fQ.QsFjDk7HOPYa7XpOTje7obnYT07Aomq0xNwqLSGqWXc
+
+
+
+
   @Get('/test')
     @ApiTags('test')
     @ApiBearerAuth() // Adds Bearer Auth for this endpoint
-    @ApiHeader({
-      name: 'Authorization',
-      description: 'Bearer token for authentication',
-      example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOjIsImlhdCI6MTcyNDE0NDU5MSwiZXhwIjoxNzI0MjMwOTkxfQ.-RA-kLjcrdrKGOkzHQgk2S1Gstl6KHiXo9TPGY2YA28',
-      required: true
-    })
     @ApiBearerAuth('Authorization')
     @UseGuards(AuthGuard) // Ensure AuthGuard is properly implemented
     getProfile(@Request() req) {

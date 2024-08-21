@@ -9,6 +9,12 @@ import * as bcrypt from "bcrypt";
 
 @Injectable()
 export class UsersAdminService {
+
+  constructor(
+      @InjectRepository(User)
+      private userRepository: Repository<User>,
+  ) { }
+
   async createNewUser(createUserInputDto: CreateUserInputDto) {
     
     const salt = await bcrypt.genSalt();
@@ -17,22 +23,16 @@ export class UsersAdminService {
     return this.userRepository.save(createUserInputDto);
   }
 
-  constructor(
-    @InjectRepository(User)
-    private userRepository: Repository<User>,
-  ) { }
-
-  async findByRole(role: string): Promise<UserResponseDto[]> {
+  async findByPermissionGroupId(id: number): Promise<UserResponseDto[]> {
     let listProfile = await this.userRepository
       .createQueryBuilder('users')
-      .leftJoinAndSelect('users.permissionGroup', 'PermissionGroup')
-      .where('PermissionGroup.role =:role', { role: role })
+        // .from(User, 'users')
+      // .innerJoinAndSelect(PermissionGroup, 'PermissionGroup', 'PermissionGroup.id = users.permission_group_id')
+      .where('users.permissionGroupId = :id', { id: id })
       .getMany();
 
-    // .where('profile.roleId = 3', { roleId: 3 })
-    // .andWhere('profile.id = :id', { id: userId })
     if (!listProfile) {
-      throw new NotFoundException(`User profile with ${role} role not found`);
+      throw new NotFoundException(`User profile with ${id} role not found`);
     }
 
     let response: UserResponseDto[] = [];

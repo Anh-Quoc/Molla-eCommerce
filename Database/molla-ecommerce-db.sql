@@ -188,6 +188,49 @@ CREATE TABLE users
     active              BOOLEAN      DEFAULT TRUE NOT NULL
 );
 
+CREATE OR REPLACE FUNCTION set_customer_role()
+    RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.permission_group_id IS NULL THEN
+        NEW.permission_group_id := (
+            SELECT id FROM permission_group WHERE name = 'Customer'
+        );
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_customer_role
+    BEFORE INSERT ON users
+    FOR EACH ROW
+EXECUTE FUNCTION set_customer_role();
+
+CREATE OR REPLACE FUNCTION set_created_time()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.created_at := CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_created_time
+    BEFORE INSERT ON users
+    FOR EACH ROW
+EXECUTE FUNCTION set_created_time();
+
+CREATE OR REPLACE FUNCTION set_updated_time()
+    RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at := CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER set_updated_time
+    BEFORE UPDATE ON users
+    FOR EACH ROW
+EXECUTE FUNCTION set_updated_time();
+
 INSERT INTO users (full_name,
                    email,
                    password,
@@ -1170,3 +1213,7 @@ INSERT INTO likes (comment_id, article_id, user_id) VALUES
 (19, NULL, 3),
 (19, NULL, 3),
 (20, NULL, 3);
+
+
+
+SELECT "PermissionGroup"."id" AS "PermissionGroup_id", "PermissionGroup"."name" AS "PermissionGroup_name", "PermissionGroup"."permissions" AS "PermissionGroup_permissions", "PermissionGroup"."active" AS "PermissionGroup_active", User FROM "users" "User", "users" "users" LEFT JOIN "permission_group" "PermissionGroup" ON "PermissionGroup"."id" = "users"."permission_group_id" WHERE "PermissionGroup"."name" = 'Customer'

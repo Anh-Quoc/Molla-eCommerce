@@ -11,8 +11,13 @@ import {
   Equals,
   IsInt,
 } from 'class-validator';
+import {User} from "../entities/User.entity";
 
 export class CustomerRegisterDto {
+
+  constructor() {
+  }
+
   @ApiProperty({
     description: 'Email of the user',
     example: 'john.doe@example.com',
@@ -35,14 +40,13 @@ export class CustomerRegisterDto {
   })
   password: string;
 
-  @ApiProperty({
-    description: 'Permission group id for the user account',
-    example: '3',
-  })
-  @IsNotEmpty()
-  @IsInt()
-  @Equals(3, { message: 'Permission group id must be equal to 3' })
-  permissionGroupId: number;
+  // @ApiProperty({
+  //   description: 'Permission group id for the user account',
+  // })
+  // @IsOptional()
+  // @IsInt()
+  // @Equals(3, { message: 'Permission group id must be equal to 3' })
+  // permissionGroupId: number;
 
   @ApiProperty({
     description: 'Full name of the user',
@@ -55,7 +59,7 @@ export class CustomerRegisterDto {
     message:
       'Full name can only contain letters, spaces, hyphens, and apostrophes',
   })
-  fullname: string;
+  fullName: string;
 
   @ApiPropertyOptional({
     description: 'Address of the user',
@@ -87,5 +91,6 @@ export class CustomerRegisterDto {
   })
   @IsOptional()
   @IsDateString()
-  dateOfBirth?: string;
+  dateOfBirth?: Date;
+
 }

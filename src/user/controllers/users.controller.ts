@@ -17,12 +17,12 @@ import {CustomerRegisterDto} from '../dtos/customer-register.dto';
 import {Logger, UseGuards} from "@nestjs/common";
 import {AuthGuard} from "../../auth/auth.guard";
 import {ApiBearerAuth, ApiHeader, ApiHeaders, ApiTags} from "@nestjs/swagger";
+import {Public} from "../../auth/decorator/public.decorator";
 
 @Controller('customer')
 export class UsersController {
 
     private readonly logger = new Logger(UsersController.name);
-
 
     constructor(private readonly usersService: UsersService) {
     }
@@ -58,16 +58,11 @@ export class UsersController {
     // }
 
     @ApiOperation({
-        summary: 'Retrieve a single user by ID',
+        summary: 'Retrieve a customer profile by ID',
         description:
             'This endpoint retrieves the details of a user specified by the given ID. Ensure the ID is valid and corresponds to an existing user.',
     })
-    @ApiTags('Common')
-    // @ApiParam({
-    //   name: 'id',
-    //   description: 'The unique identifier of the user profile to retrieve.',
-    //   example: 1,
-    // })
+    @ApiTags('Customer')
     @ApiResponse({
         status: 200,
         description: 'Successfully retrieved the user.',
@@ -88,16 +83,9 @@ export class UsersController {
             'Internal server error. The user could not be retrieved due to a server issue.',
     })
     @Get('profile')
-    @ApiBearerAuth() // Adds Bearer Auth for this endpoint
-    @ApiHeader({
-        name: 'Authorization',
-        description: 'Bearer token for authentication',
-        example: 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInJvbGUiOjIsImlhdCI6MTcyNDE0NDU5MSwiZXhwIjoxNzI0MjMwOTkxfQ.-RA-kLjcrdrKGOkzHQgk2S1Gstl6KHiXo9TPGY2YA28',
-        required: true
-    })
+    @ApiBearerAuth()
     @ApiBearerAuth('Authorization')
-    @UseGuards(AuthGuard) // Ensure AuthGuard is properly implemented
-    // Find one user API
+    @UseGuards(AuthGuard)
     async getCurrentUserProfile(@Request() req): Promise<UserResponseDto> {
         const profile = await this.usersService.findById(req.user_id);
 
@@ -112,6 +100,7 @@ export class UsersController {
         description:
             'This endpoint allows for the registration of a new customer with the provided details. Ensure all required fields are provided and valid.',
     })
+    @ApiTags('Customer')
     @ApiResponse({
         status: 201,
         description: 'User successfully registered.',
@@ -131,10 +120,14 @@ export class UsersController {
         description:
             'Internal server error. The user could not be registered due to a server issue.',
     })
+    @Public()
     @Post()
-    // Register user API
-    async register(@Body() userResponseDto: CustomerRegisterDto): Promise<void> {
-        const profile = await this.usersService.create(userResponseDto);
+    async register(@Body() userRegisterDto: CustomerRegisterDto): Promise<UserResponseDto> {
+        const profile = await this.usersService.create(userRegisterDto);
+        return plainToClass(UserResponseDto, profile, {
+            excludeExtraneousValues: true,
+            exposeUnsetFields: false,
+        });
     }
 
     @ApiOperation({
@@ -142,11 +135,7 @@ export class UsersController {
         description:
             'This endpoint updates the user profile specified by the given ID. Provide the updated details in the request body. Ensure the ID is valid and corresponds to an existing user.',
     })
-    @ApiParam({
-        name: 'id',
-        description: 'The unique identifier of the user profile to update.',
-        example: 1,
-    })
+    @ApiTags('Customer')
     @ApiResponse({
         status: 200,
         description: 'User profile updated successfully.',
@@ -171,13 +160,16 @@ export class UsersController {
         description:
             'Internal server error. The user profile could not be updated due to a server issue.',
     })
-    @Put(':id')
+    @ApiBearerAuth() // Adds Bearer Auth for this endpoint
+    @ApiBearerAuth('Authorization')
+    @UseGuards(AuthGuard)
+    @Put()
     // Update user API
     async update(
-        @Param('id') id: number,
+        @Request() req,
         @Body() updateUserInputDto: UpdateUserInputDto,
     ): Promise<UserResponseDto> {
-        const profile = await this.usersService.update(id, updateUserInputDto);
+        const profile = await this.usersService.update(req.user_id, updateUserInputDto);
 
         return plainToClass(UserResponseDto, profile, {
             excludeExtraneousValues: true,
@@ -185,38 +177,38 @@ export class UsersController {
         });
     }
 
-    @ApiOperation({
-        summary: 'Delete an existing user profile by ID',
-        description:
-            'This endpoint deletes the user profile specified by the given ID. Ensure that the ID is valid and corresponds to an existing user. The operation will remove the user from the system.',
-    })
-    @ApiParam({
-        name: 'id',
-        description: 'The unique identifier of the user profile to delete.',
-        example: 1,
-    })
-    @ApiResponse({
-        status: 200,
-        description: 'User profile deleted successfully.',
-    })
-    @ApiResponse({
-        status: 404,
-        description:
-            'User not found. The provided ID does not match any existing user.',
-    })
-    @ApiResponse({
-        status: 400,
-        description: 'Invalid ID format. Ensure the ID is in the correct format.',
-    })
-    @ApiResponse({
-        status: 500,
-        description:
-            'Internal server error. The user profile could not be deleted due to a server issue.',
-    })
-    @Delete(':id')
-    // Delete user API
-    async delete(@Param('id') id: number): Promise<void> {
-        return this.usersService.remove(id);
-    }
+    // @ApiOperation({
+    //     summary: 'Delete an existing user profile by ID',
+    //     description:
+    //         'This endpoint deletes the user profile specified by the given ID. Ensure that the ID is valid and corresponds to an existing user. The operation will remove the user from the system.',
+    // })
+    // @ApiParam({
+    //     name: 'id',
+    //     description: 'The unique identifier of the user profile to delete.',
+    //     example: 1,
+    // })
+    // @ApiResponse({
+    //     status: 200,
+    //     description: 'User profile deleted successfully.',
+    // })
+    // @ApiResponse({
+    //     status: 404,
+    //     description:
+    //         'User not found. The provided ID does not match any existing user.',
+    // })
+    // @ApiResponse({
+    //     status: 400,
+    //     description: 'Invalid ID format. Ensure the ID is in the correct format.',
+    // })
+    // @ApiResponse({
+    //     status: 500,
+    //     description:
+    //         'Internal server error. The user profile could not be deleted due to a server issue.',
+    // })
+    // @Delete(':id')
+    // // Delete user API
+    // async delete(@Param('id') id: number): Promise<void> {
+    //     return this.usersService.remove(id);
+    // }
 }
   

@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, Post, Query, Req, UseGuards } from "@nestjs/common";
 import { UsersService } from "../services/users.service";
-import { ApiBody, ApiOperation, ApiParam, ApiProperty, ApiResponse } from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiProperty, ApiResponse, ApiTags} from "@nestjs/swagger";
 import { UsersAdminService } from "../services/users.admin.service";
 import { plainToClass } from "class-transformer";
 import { User } from "../entities/User.entity";
@@ -23,10 +23,11 @@ export class UsersAdminController {
         description: 'This endpoint retrieves a list of users who are assigned to a specific role. ' +
                      'You need to provide the role name as a query parameter. The API returns an array of user objects associated with the specified role.'
     })
+    @ApiTags('Admin')
     @ApiParam({
-        name: 'role',
+        name: 'permissionGroupId',
         description: 'The name of the role to filter users by.',
-        example: 'Admin'
+        example: 1
     })
     @ApiResponse({
         status: 200,
@@ -42,11 +43,12 @@ export class UsersAdminController {
         status: 500,
         description: 'Internal Server Error. An error occurred while processing the request.',
     })
-    @Get('/users')
-    // @UseGuards(PermissionsGuard)
-    // @CheckPermissions([PermissionAction.READ, "user"])
-    getUsersByRole(@Query('role') role: string){
-        return this.userAdminService.findByRole(role);
+    @ApiBearerAuth()
+    @ApiBearerAuth('Authorization')
+    @UseGuards(AuthGuard) // Ensure AuthGuard is properly implemented
+    @Get('/users/:permissionGroupId')
+    getUsersByRole(@Param('permissionGroupId') id: number){
+        return this.userAdminService.findByPermissionGroupId(id);
     }
     
     // 8. Get user profile
@@ -55,6 +57,7 @@ export class UsersAdminController {
         summary: 'Get user profile by ID',
         description: 'This endpoint retrieves the profile information of a specific user identified by their ID. '
     })
+    @ApiTags('Admin')
     @ApiParam({
         name: 'id',
         description: 'The unique identifier of the user whose profile is to be retrieved.',
@@ -73,6 +76,9 @@ export class UsersAdminController {
         status: 500,
         description: 'Internal Server Error. An error occurred while processing the request.',
     })
+    @ApiBearerAuth()
+    @ApiBearerAuth('Authorization')
+    @UseGuards(AuthGuard) // Ensure AuthGuard is properly implemented
     @Get('/users/:id')
     async getUserById(@Param('id') id: number): Promise<UserAdminResponseDto> {
         return plainToClass(UserAdminResponseDto, await this.userAdminService.findById(id));
@@ -83,6 +89,7 @@ export class UsersAdminController {
         description: 'This endpoint allows for the creation of a new user. You need to provide the user details, including role and profile information, in the request body. ' +
                      'The API creates the new user and returns the details of the created user.'
     })
+    @ApiTags('Admin')
     @ApiBody({
         description: 'The data required to create a new user, including role and profile information.',
         type: CreateUserInputDto,       
@@ -95,7 +102,7 @@ export class UsersAdminController {
             "email": "john.doe@example.com", 
             "password": "$2b$10$ot1CGTQEwet2oG/mecqEyuJQhKPS/B0AiHTWgqWibKwYsC/fic28a", 
             "permissionGroupId": 3, 
-            "fullname": "John Doe", 
+            "fullName": "John Doe",
             "address": "123 Main St, Apt 4B, Springfield, IL 62704", 
             "phoneNumber": "1234567890", 
             "dateOfBirth": "1980-01-01", 
@@ -112,6 +119,9 @@ export class UsersAdminController {
         status: 500,
         description: 'Internal Server Error. An error occurred while processing the request.',
     })
+    @ApiBearerAuth()
+    @ApiBearerAuth('Authorization')
+    @UseGuards(AuthGuard) // Ensure AuthGuard is properly implemented
     @Post('/users')
     createNewUser(@Body() createUserInputDto: CreateUserInputDto){
         return this.userAdminService.createNewUser(createUserInputDto);

@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, Post } from 'node_modules/@nestjs/common';
 import { PermissionGroup } from '../entities/PermissionGroup.entity';
-import { PermissionGroupService } from '../services/PermissionGroup.admin.service';
+import { PermissionGroupAdminService } from '../services/PermissionGroup.admin.service';
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from 'node_modules/@nestjs/swagger';
 
 // @Controller('permissions')
 export class PermissionsController {
-  constructor(private permissionService: PermissionGroupService) {}
+  constructor(private permissionService: PermissionGroupAdminService) {}
 
   // @ApiOperation({
   //   summary: 'Retrieve all permissions for all users',

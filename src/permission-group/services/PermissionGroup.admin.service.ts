@@ -5,7 +5,7 @@ import { PermissionGroup } from '../entities/PermissionGroup.entity';
 import { PermissionGroupInputDto } from '../dtos/PermissionGroup.input.dto';
 
 @Injectable()
-export class PermissionGroupService {
+export class PermissionGroupAdminService {
 
   constructor(
     @InjectRepository(PermissionGroup)
@@ -32,7 +32,7 @@ export class PermissionGroupService {
   async findByRole(role: string): Promise<PermissionGroup> {
     const permissions = await this.pgRepository
       .createQueryBuilder('permission_group')
-      .where('permission_group.role = :role', { role })
+      .where('permission_group.name = :name', { name: role })
       .getOne(); // Use getMany() to retrieve multiple permissions
 
     return permissions;
@@ -51,7 +51,7 @@ export class PermissionGroupService {
     let role = crGroupPermissionDto.name;
     let groupPermission: PermissionGroup = await this.pgRepository
       .createQueryBuilder('group_permissions')
-      .where('group_permissions.role = :role', { role })
+      .where('group_permissions.name = :name', { role })
       .getOne();
     // check role is present
     if (!groupPermission) {
@@ -66,13 +66,14 @@ export class PermissionGroupService {
     const result = await this.pgRepository
       .createQueryBuilder('permission_group')
       .delete()
-      .where('permission_group.role = :role', { role })
+      .where('permission_group.name = :name', { role })
       .execute();
 
     if (result.affected === 0) {
       throw new Error(`Permission group with role '${role}' not found.`);
     }
   }
+
 
 }
 

@@ -28,7 +28,7 @@ export class UserResponseDto {
 
   @ApiProperty()
   @Expose()
-  fullname: string;
+  fullName: string;
 
   @ApiProperty()
   @Expose()
@@ -47,7 +47,7 @@ export class UserResponseDto {
 
   @ApiProperty()
   @Expose()
-  roleId: number;
+  permissionGroupId: number;
 
   @ApiProperty()
   @Expose()

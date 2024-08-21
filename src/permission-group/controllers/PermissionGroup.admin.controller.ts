@@ -1,15 +1,16 @@
-import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Query } from '@nestjs/common';
-import { PermissionGroupService } from 'src/permission-group/services/PermissionGroup.admin.service';
+import {Body, Controller, Delete, Get, Inject, Param, Post, Put, Query, UseGuards} from '@nestjs/common';
+import { PermissionGroupAdminService } from 'src/permission-group/services/PermissionGroup.admin.service';
 import { PermissionGroup } from '../entities/PermissionGroup.entity';
 import { PermissionGroupInputDto } from '../dtos/PermissionGroup.input.dto';
-import { ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import {ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiQuery, ApiResponse} from '@nestjs/swagger';
+import {AuthGuard} from "../../auth/auth.guard";
 
 @Controller('admin')
 export class PermissionGroupAdminController {
 
     constructor(
-        @Inject(PermissionGroupService)
-        private readonly permissionGroupService: PermissionGroupService
+        @Inject(PermissionGroupAdminService)
+        private readonly permissionGroupService: PermissionGroupAdminService
     ) { }
 
     // 1. Get permission group  by role
@@ -47,6 +48,9 @@ export class PermissionGroupAdminController {
         status: 500,
         description: 'Internal Server Error. An error occurred while processing the request.',
     })
+    @ApiBearerAuth() // Adds Bearer Auth for this endpoint
+    @ApiBearerAuth('Authorization')
+    @UseGuards(AuthGuard) // Ensure AuthGuard is properly implemented
     @Get('/permissions')
     getPermissionsByRole(@Query('role') role: string): Promise<PermissionGroup> {
         return this.permissionGroupService.findByRole(role);

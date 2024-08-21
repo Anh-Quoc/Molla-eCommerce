@@ -4,12 +4,16 @@ import { Repository } from "typeorm";
 import { PermissionGroup } from "../entities/PermissionGroup.entity";
 
 @Injectable()
-export class PermissionGroupAdminService {
+export class PermissionGroupService {
   constructor(
     @InjectRepository(PermissionGroup)
     private permissionGroupRepository: Repository<PermissionGroup>,
   ) { }
 
-
+  async getNamePermissionGroup(name: string): Promise<PermissionGroup> {
+    return this.permissionGroupRepository.createQueryBuilder('permission_group')
+        .where('permission_group.name = :name', {name})
+        .getOne();
+  }
   
 }
