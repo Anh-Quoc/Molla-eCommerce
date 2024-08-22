@@ -281,8 +281,8 @@ CREATE TABLE products
     types         JSONB,
     tags          JSONB,
 
-    total_comment INTEGER      NOT NULL DEFAULT 0,
-    total_rating  INTEGER,
+    total_comments INTEGER      NOT NULL DEFAULT 0,
+    total_ratings  INTEGER,
 
     created_at    TIMESTAMP(3)          DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP(3)          DEFAULT CURRENT_TIMESTAMP,
@@ -290,7 +290,7 @@ CREATE TABLE products
     updated_by    INTEGER REFERENCES users (id)
 );
 INSERT INTO products
-(url, name, description, price, stock, types, tags, total_comment, total_rating, created_by, updated_by)
+(url, name, description, price, stock, types, tags, total_comments, total_ratings, created_by, updated_by)
 VALUES ('macbook-pro-14', 'MacBook Pro 14', 'Apple MacBook Pro 14 with M2 chip, 16GB RAM, 512GB SSD.', 1999.99, 10, '{
   "category": "laptop",
   "brand": "Apple"

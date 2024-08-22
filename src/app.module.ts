@@ -3,13 +3,14 @@ import { TypeOrmModule } from 'node_modules/@nestjs/typeorm';
 import { ConfigModule, ConfigService } from 'node_modules/@nestjs/config';
 
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './user/users.module';
+import { UsersModule } from './users/users.module';
 import { PermissionGroupModule } from './permission-group/PermissionGroup.module';
 import { PermissionGroup } from './permission-group/entities/PermissionGroup.entity';
-import { User } from './user/entities/User.entity';
+import { User } from './users/entities/User.entity';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ProductsModule } from './products/products.module';
+import {Product} from "./products/entities/product.entity";
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { ProductsModule } from './products/products.module';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
-        entities: [User, PermissionGroup],
+        entities: [User, PermissionGroup, Product],
         logging: true,
         synchronize: false,
       }),

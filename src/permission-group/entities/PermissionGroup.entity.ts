@@ -1,65 +1,59 @@
 import {
-  Column,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn,
+    Column,
+    Entity,
+    OneToMany,
+    PrimaryGeneratedColumn,
 } from 'node_modules/typeorm';
-import { User } from 'src/user/entities/User.entity';
-import { IsBoolean, IsString } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
+import {User} from 'src/users/entities/User.entity';
+import {IsBoolean, IsString} from 'class-validator';
+import {ApiProperty} from '@nestjs/swagger';
 
-export class PermissionAction{
-  @ApiProperty({
-
-  })
-  @IsBoolean()
-  create: boolean;
-  @ApiProperty({
-      
-  })
-  @IsBoolean()
-  read: boolean;
-  @ApiProperty({
-      
-  })
-  @IsBoolean()
-  update: boolean;
-  @ApiProperty({
-      
-  })
-  @IsBoolean()
-  delete: boolean;
+export class PermissionAction {
+    @ApiProperty({})
+    @IsBoolean()
+    create: boolean;
+    @ApiProperty({})
+    @IsBoolean()
+    read: boolean;
+    @ApiProperty({})
+    @IsBoolean()
+    update: boolean;
+    @ApiProperty({})
+    @IsBoolean()
+    delete: boolean;
 }
 
 export class ResourceAccessControl {
-  @ApiProperty({
-      
-  })
-  @IsString()
-  resource: string;
-  @ApiProperty({
-      type: PermissionAction
-  })
-  action : PermissionAction
+    @ApiProperty({})
+    @IsString()
+    resource: string;
+    @ApiProperty({
+        type: PermissionAction
+    })
+    action: PermissionAction
 }
 
-@Entity({ name: 'permission_group' })
+@Entity({name: 'permission_group'})
 export class PermissionGroup {
-  @PrimaryGeneratedColumn()
-  id: number;
+    @PrimaryGeneratedColumn()
+    id: number;
 
-  @Column({unique: true})
-  name: string;
+    @Column({unique: true})
+    name: string;
 
-  @OneToMany(() => User, (user) => user.permissionGroup, {
-    cascade: true,
-    onDelete: 'CASCADE'
-  })
-  users: User[];
+    @OneToMany(() => User, (user) => user.permissionGroup, {
+        cascade: true,
+        onDelete: 'CASCADE'
+    })
+    users: User[];
 
-  @Column({name: 'permissions', type: "jsonb"})
-  permissions : ResourceAccessControl[];
+    @Column({name: 'permissions', type: "jsonb"})
+    permissions: ResourceAccessControl[];
 
-  @Column({name: 'active'})
-  active: boolean;
+    @Column({name: 'active'})
+    active: boolean;
+
+
 }
+
+

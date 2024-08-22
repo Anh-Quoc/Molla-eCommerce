@@ -67,19 +67,12 @@ export class UsersService {
     }
 
     convertToUserEntity(newUser: CustomerRegisterDto): User {
-        const user = new User();
-        user.email = newUser.email;
-        user.password = newUser.password;
-        user.fullName = newUser.fullName;
-        user.address = newUser.address;
-        user.phoneNumber = newUser.phoneNumber;
-        user.dateOfBirth = newUser.dateOfBirth;
-        return user;
+        return this.userRepository.create(newUser)
     }
 
     async update(
         userId: number,
-        updateUserInputDto: UpdateUserInputDto,
+        input: UpdateUserInputDto,
     ): Promise<User> {
         const existingProfile = await this.userRepository.findOne({
             where: {id: userId},
@@ -91,10 +84,12 @@ export class UsersService {
 
         const updatedProfile = this.userRepository.merge(
             existingProfile,
-            updateUserInputDto,
+            input,
         );
 
-        return this.userRepository.save(updatedProfile);
+        await this.userRepository.update(userId, updatedProfile);
+
+        return updatedProfile;
     }
 
     async updateLoginDate(
@@ -121,7 +116,13 @@ export class UsersService {
         }
     }
 
-    findByEmail(email: string): Promise<User> {
-        return this.userRepository.findOneBy({email});
+    async findByEmail(email: string): Promise<User> {
+        const user = await this.userRepository.findOneBy({email});
+
+        if (!user) {
+            throw new NotFoundException(`User with email ${email} not found`);
+        }
+
+        return user;
     }
 }

@@ -3,7 +3,7 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { JwtModule } from 'node_modules/@nestjs/jwt';
 import { jwtConstants } from './constants';
-import { UsersModule } from 'src/user/users.module';
+import { UsersModule } from 'src/users/users.module';
 import {APP_GUARD} from "@nestjs/core";
 import {AuthGuard} from "./guards/auth.guard";
 import {PermissionGroupModule} from "../permission-group/PermissionGroup.module";
